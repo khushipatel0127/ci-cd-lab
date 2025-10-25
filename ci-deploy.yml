@@ -1,0 +1,32 @@
+name: CI and Deploy to GitHub Pages
+
+# Trigger workflow on every push to main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # For a static site, we don't need build steps
+      - name: Run tests
+        run: echo "No tests to run for static site"
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .   # publish everything in repo root (index.html)
